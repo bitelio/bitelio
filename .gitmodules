@@ -1,0 +1,6 @@
+[submodule "infrastructure"]
+	path = infrastructure
+	url = git@github.com:bitelio/infrastructure.git
+[submodule "web"]
+	path = web
+	url = git@github.com:bitelio/web.git
