@@ -4,3 +4,12 @@
 [submodule "web"]
 	path = web
 	url = git@github.com:bitelio/web.git
+[submodule "backend"]
+	path = backend
+	url = git@github.com:bitelio/backend
+[submodule "api"]
+	path = api
+	url = git@github.com:bitelio/api
+[submodule "aws"]
+	path = aws
+	url = git@github.com:bitelio/aws
