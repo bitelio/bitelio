@@ -1,0 +1,20 @@
+version: "3.1"
+services:
+  redis:
+    image: redis
+
+  postgres:
+    image: postgres
+
+  api:
+    image: bitelio/api
+    depends_on:
+      - redis
+      - postgres
+    ports:
+      - 8080:80
+    environment:
+      BTL_STORE: postgres/bitelio
+      BTL_CACHE: redis
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:8080/status"]
