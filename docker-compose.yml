@@ -3,18 +3,27 @@ services:
   redis:
     image: redis
 
-  postgres:
-    image: postgres
+  mysql:
+    image: mysql
+    environment:
+      MYSQL_USER: api
+      MYSQL_DATABASE: bitelio
+      MYSQL_PASSWORD: password
+      MYSQL_ALLOW_EMPTY_PASSWORD: 1
 
   api:
     image: bitelio/api
     depends_on:
       - redis
-      - postgres
+      - mysql
     ports:
       - 8080:80
+    volumes:
+      - "./wait-for-it.sh:/bitelio/wait-for-it.sh"
+    command: bash -c "./wait-for-it.sh mysql:3306 -- ./entrypoint.sh"
     environment:
-      BTL_STORE: postgres/bitelio
+      BTL_STORE: 'mysql://api:password@mysql:3306/bitelio'
       BTL_CACHE: redis
+      BTL_DEBUG: 1
     healthcheck:
       test: ["CMD", "curl", "-f", "http://localhost:8080/status"]
