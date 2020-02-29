@@ -1,0 +1,43 @@
+version: "3.7"
+services:
+  redis:
+    container_name: redis
+    image: redis
+
+  mysql:
+    container_name: mysql
+    image: mysql
+    environment:
+      MYSQL_USER: api
+      MYSQL_DATABASE: bitelio
+      MYSQL_PASSWORD: password
+      MYSQL_ALLOW_EMPTY_PASSWORD: 1
+
+  api:
+    container_name: api
+    image: bitelio/api
+    depends_on:
+      - redis
+      - mysql
+    volumes:
+      - "./wait-for-it.sh:/wait-for-it.sh"
+      - ../api:/bitelio
+    command: bash -c "/wait-for-it.sh mysql:3306 -- python3.8 -OO -m api"
+    environment:
+      API_STORE: "mysql://api:password@mysql:3306/bitelio"
+      API_CACHE: redis
+      API_DEBUG: 1
+    restart: on-failure
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:8080/status"]
+
+  nginx:
+    container_name: nginx
+    image: nginx
+    volumes:
+      - ./nginx.conf:/etc/nginx/nginx.conf
+      - ../web/dist:/bitelio
+    ports:
+      - 3000:3000
+    depends_on:
+      - api
